@@ -43,45 +43,12 @@
     <mu2>0.2</mu2>
     <material>Gazebo/Grey</material>
   </gazebo>
-  <gazebo reference="sled_hoz">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <implicitSpringDamper>1</implicitSpringDamper>
-    <material>Gazebo/Grey</material>
-  </gazebo>
-  <gazebo reference="sled_ver">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <material>Gazebo/Grey</material>
-    <implicitSpringDamper>1</implicitSpringDamper>
-  </gazebo>
-  <gazebo reference="bucket">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <implicitSpringDamper>1</implicitSpringDamper>
-    <material>Gazebo/Grey</material>
-  </gazebo>
-  <gazebo reference="arm_upper">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <material>Gazebo/Grey</material>
-    <implicitSpringDamper>1</implicitSpringDamper>
-  </gazebo>
-  <gazebo reference="arm_lower">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
-    <implicitSpringDamper>1</implicitSpringDamper>
-    <material>
-       <script>Gazebo/Grey</script>
-   </material>
-  </gazebo>
   <gazebo reference="zed_link">
     <material>Gazebo/Blue</material>
   </gazebo>
   <gazebo reference="imu_link">
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
-
 
  <gazebo reference="ZED_left_camera">
     <sensor type="multicamera" name="stereo_camera">
