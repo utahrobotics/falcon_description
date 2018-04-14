@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<robot name="falcon" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:property name="PI" value="3.1415926535897931"/>
+
+  <xacro:property name="dummy_inertia" value="1e-09"/>
+
+  <xacro:property name="mount_spacing" value="0.120"/>
+
+  <material name="dark_grey"><color rgba="0.2 0.2 0.2 1.0"/></material>
+  <material name="light_grey"><color rgba="0.4 0.4 0.4 1.0"/></material>
+  <material name="stl"><color rgba="0.8 0.8 0.0 1.0"/></material>
+  <material name="red"><color rgba="0.95 0.26 0.21 1.0"/></material>
+  <material name="dark_red"><color rgba="0.5 0.0 0.0 1.0"/></material>
+  <material name="black"><color rgba="0.15 0.15 0.15 1.0"/></material>
+  <material name="green"><color rgba="0 1 0 1"/></material>
+  <material name="invisible"><color rgba="0 0 0 0"/></material>
+
+  <xacro:property name="chassis_height" value="0.73"/>
+  <xacro:property name="chassis_width" value="0.73"/>
+  <xacro:property name="chassis_length" value="1.23"/>
+
+  <!-- TODO: measure these -->
+  <xacro:property name="wheel_base" value="0.505"/>
+  <xacro:property name="wheel_track" value="0.61"/>
+  <xacro:property name="wheel_radius" value="0.145"/>
+  <xacro:property name="wheel_width" value="0.125"/>
+  <xacro:property name="wheel_z_offset" value="-0.3"/>
+  <!-- not sure about this one -->
+  <xacro:property name="wheel_height" value="0.047625"/>
+
+
+  <xacro:macro name="wheel" params="prefix reflect *joint_pose">
+    <link name="${prefix}_wheel_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+        <geometry>
+          <mesh filename="package://falcon_description/meshes/visual/wheel.dae"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="2"/>
+        <!-- moment of inertia of a cylinder https://en.wikipedia.org/wiki/List_of_moments_of_inertia#List_of_3D_inertia_tensors -->
+        <inertia ixx="0.0785782304" ixy="0" ixz="0" iyy="0.0785782304" iyz="0" izz="0.1051404359"/>
+        <!-- <inertia
+          ixx="${(1.0/12.0)*8.6*(3*wheel_radius**2 + wheel_width**2)}" ixy="0" ixz="0"
+          iyy="${(1.0/12.0)*8.6*(3*wheel_radius**2 + wheel_width**2)}" iyz="0"
+          izz="${0.5*8.6*wheel_radius}"/> -->
+      </inertial>
+    </link>
+
+    <gazebo reference="${prefix}_wheel_link">
+      <!-- TODO: set these constants. They are just taken from urdf_tutorial. 09 -->
+      <mu1 value="5"/>
+      <mu2 value="5"/>
+      <!-- <minDepth>0.00</minDepth> -->
+      <!-- <max_vel>0.01</max_vel> -->
+      <material>Gazebo/DarkGrey</material>
+    </gazebo>
+
+    <joint name="${prefix}_wheel" type="continuous">
+      <parent link="chassis"/>
+      <child link="${prefix}_wheel_link"/>
+      <xacro:insert_block name="joint_pose"/>
+      <axis xyz="0 ${reflect} 0"/>
+      <!-- <dynamics damping="100" friction="1"/> -->
+    </joint>
+
+    <transmission name="${prefix}_wheel_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${prefix}_wheel">
+		  <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${prefix}_actuator">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+  </xacro:macro>
+
+  <link name="base_link"></link>
+  <joint name="chassis_base_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="chassis"/>
+    <origin xyz="0 0 ${(chassis_height/2)+wheel_radius-wheel_height}"/>
+  </joint>
+
+  <link name="chassis">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+          <mesh filename="package://falcon_description/meshes/visual/chassis.dae"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="10"/>
+      <inertia ixx="0.28" ixy="0.00" ixz="0.00" iyy="0.42" iyz="0.00" izz="0.17"/>
+    </inertial>
+  </link>
+
+  <xacro:wheel prefix="left_front" reflect="1">
+	  <origin xyz="${wheel_base/2} ${wheel_track/2} ${wheel_z_offset}" rpy="0 0 0"/>
+  </xacro:wheel>
+  <xacro:wheel prefix="left_rear" reflect="1">
+	  <origin xyz="${-wheel_base/2} ${wheel_track/2} ${wheel_z_offset}" rpy="0 0 0"/>
+  </xacro:wheel>
+  <xacro:wheel prefix="right_front" reflect="-1">
+	  <origin xyz="${wheel_base/2} ${-wheel_track/2} ${wheel_z_offset}" rpy="${PI} 0 0"/>
+  </xacro:wheel>
+  <xacro:wheel prefix="right_rear" reflect="-1">
+	  <origin xyz="${-wheel_base/2} ${-wheel_track/2} ${wheel_z_offset}" rpy="${PI} 0 0"/>
+  </xacro:wheel>
+
+
+
+</robot>
